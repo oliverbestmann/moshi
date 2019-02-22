@@ -16,6 +16,7 @@
 package com.squareup.moshi.kotlin.codegen
 
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
 
@@ -24,5 +25,11 @@ internal fun TypeName.rawType(): ClassName {
     is ClassName -> this
     is ParameterizedTypeName -> rawType
     else -> throw IllegalArgumentException("Cannot get raw type from $this")
+  }
+}
+
+internal fun KModifier.checkIsVisibility() {
+  require(ordinal <= KModifier.INTERNAL.ordinal) {
+    "Visibility must be one of ${(0..KModifier.INTERNAL.ordinal).joinToString { KModifier.values()[it].name }}. Is $name"
   }
 }
