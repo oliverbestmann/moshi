@@ -42,14 +42,14 @@ internal class AdapterGenerator(
   target: TargetType,
   private val propertyList: List<PropertyGenerator>
 ) {
-  private val className = target.name
+  private val className = target.typeName.rawType()
   private val isDataClass = target.isDataClass
   private val visibility = target.visibility
   private val typeVariables = target.typeVariables
 
   private val nameAllocator = NameAllocator()
   private val adapterName = "${className.simpleNames.joinToString(separator = "_")}JsonAdapter"
-  private val originalTypeName = target.element.asType().asTypeName()
+  private val originalTypeName = target.typeName
 
   private val moshiParam = ParameterSpec.builder(
       nameAllocator.newName("moshi"),

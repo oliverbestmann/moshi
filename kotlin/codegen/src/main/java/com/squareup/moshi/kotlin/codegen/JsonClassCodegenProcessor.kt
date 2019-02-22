@@ -20,7 +20,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asClassName
 import com.squareup.moshi.JsonClass
 import me.eugeniomarletti.kotlin.metadata.KotlinMetadataUtils
-import me.eugeniomarletti.kotlin.metadata.declaresDefaultValue
 import me.eugeniomarletti.kotlin.processing.KotlinAbstractProcessor
 import java.io.File
 import javax.annotation.processing.ProcessingEnvironment
@@ -95,7 +94,7 @@ class JsonClassCodegenProcessor : KotlinAbstractProcessor(), KotlinMetadataUtils
   }
 
   private fun adapterGenerator(element: Element): AdapterGenerator? {
-    val type = TargetType.get(messager, elementUtils, typeUtils, element) ?: return null
+    val type = targetType(messager, elementUtils, typeUtils, element) ?: return null
 
     val properties = mutableMapOf<String, PropertyGenerator>()
     for (property in type.properties.values) {
@@ -106,9 +105,9 @@ class JsonClassCodegenProcessor : KotlinAbstractProcessor(), KotlinMetadataUtils
     }
 
     for ((name, parameter) in type.constructor.parameters) {
-      if (type.properties[parameter.name] == null && !parameter.proto.declaresDefaultValue) {
+      if (type.properties[parameter.name] == null && !parameter.hasDefault) {
         messager.printMessage(
-            ERROR, "No property for required constructor parameter $name", parameter.element)
+            ERROR, "No property for required constructor parameter $name" /*, parameter.element // TODO how do we pass this? */)
         return null
       }
     }
