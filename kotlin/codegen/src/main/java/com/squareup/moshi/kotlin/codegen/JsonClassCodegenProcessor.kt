@@ -17,6 +17,7 @@ package com.squareup.moshi.kotlin.codegen
 
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 import com.squareup.moshi.JsonClass
 import me.eugeniomarletti.kotlin.metadata.KotlinMetadataUtils
 import me.eugeniomarletti.kotlin.metadata.declaresDefaultValue
@@ -125,7 +126,7 @@ class JsonClassCodegenProcessor : KotlinAbstractProcessor(), KotlinMetadataUtils
   }
 
   private fun AdapterGenerator.generateAndWrite(generatedOption: TypeElement?) {
-    val fileSpec = generateFile(generatedOption)
+    val fileSpec = generateFile(generatedOption?.asClassName())
     val adapterName = fileSpec.members.filterIsInstance<TypeSpec>().first().name!!
     val outputDir = generatedDir ?: mavenGeneratedDir(adapterName)
     fileSpec.writeTo(outputDir)
