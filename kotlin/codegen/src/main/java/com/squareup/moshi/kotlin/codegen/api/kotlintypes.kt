@@ -28,6 +28,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.asTypeVariableName
+import com.squareup.kotlinpoet.tag
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.ExecutableElement
@@ -43,7 +44,6 @@ import javax.lang.model.element.Modifier.STATIC
 import javax.lang.model.element.Modifier.SYNCHRONIZED
 import javax.lang.model.element.Modifier.TRANSIENT
 import javax.lang.model.element.Modifier.VOLATILE
-import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.type.TypeVariable
 import kotlin.reflect.KClass
@@ -68,7 +68,7 @@ internal fun KModifier.checkIsVisibility() {
  * This will copy its visibility modifiers, type parameters, return type, name, parameters, and
  * throws declarations.
  *
- * The original `method` ([this]) is stored in [FunSpec.tags].
+ * The original `method` ([this]) is stored in [FunSpec.tag].
  *
  * Nearly identical to [FunSpec.overriding], but no override modifier is added nor are checks around
  * overridability done
@@ -102,7 +102,7 @@ internal fun ExecutableElement.asFunSpec(): FunSpec {
         .build())
   }
 
-  funBuilder.tag<ExecutableElement>(this)
+  funBuilder.tag(this)
   return funBuilder.build()
 }
 
@@ -113,7 +113,7 @@ internal fun ExecutableElement.asFunSpec(): FunSpec {
  * Java modifiers that correspond to annotations in kotlin will be added as well (`volatile`,
  * `transient`, etc`.
  *
- * The original `field` ([this]) is stored in [PropertySpec.tags].
+ * The original `field` ([this]) is stored in [PropertySpec.tag].
  */
 internal fun VariableElement.asPropertySpec(asJvmField: Boolean = false): PropertySpec {
   require(kind == ElementKind.FIELD) {
@@ -132,7 +132,7 @@ internal fun VariableElement.asPropertySpec(asJvmField: Boolean = false): Proper
   }
   propertyBuilder.addAnnotations(annotationMirrors.map(AnnotationMirror::asAnnotationSpec))
   propertyBuilder.addAnnotations(modifiers.mapNotNull { it.asAnnotation() })
-  propertyBuilder.tag<VariableElement>(this)
+  propertyBuilder.tag(this)
   if (asJvmField && KModifier.PRIVATE !in propertyBuilder.modifiers) {
     propertyBuilder.addAnnotation(JvmField::class)
   }
@@ -143,12 +143,12 @@ internal fun VariableElement.asPropertySpec(asJvmField: Boolean = false): Proper
  * Returns a new [AnnotationSpec] representation of [this].
  *
  * Identical and delegates to [AnnotationSpec.get], but the original `mirror` is also stored
- * in [AnnotationSpec.tags].
+ * in [AnnotationSpec.tag].
  */
 internal fun AnnotationMirror.asAnnotationSpec(): AnnotationSpec {
   return AnnotationSpec.get(this)
       .toBuilder()
-      .tag<TypeElement>(MoreTypes.asTypeElement(annotationType))
+      .tag(MoreTypes.asTypeElement(annotationType))
       .build()
 }
 
