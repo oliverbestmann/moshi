@@ -190,11 +190,13 @@ internal class AdapterGenerator(
           result.addStatement("%N = %N.fromJson(%N)",
               property.localName, nameAllocator[property.delegateKey], readerParam)
         } else {
-          result.addCode("%N = %N.fromJson(%N) ?: throw·",
+          result.addCode("«%N = %N.fromJson(%N) ?: throw·",
               property.localName, nameAllocator[property.delegateKey], readerParam)
 
           result.addCode(jsonDataException(
               "Non-null value '", property.localName, "' was null at ", readerParam))
+
+          result.addCode("\n»")
         }
         result.addStatement("%N = true", property.localIsPresentName)
         result.endControlFlow()
@@ -203,11 +205,13 @@ internal class AdapterGenerator(
           result.addStatement("%L -> %N = %N.fromJson(%N)",
               index, property.localName, nameAllocator[property.delegateKey], readerParam)
         } else {
-          result.addCode("%L -> %N = %N.fromJson(%N) ?: throw·",
+          result.addCode("«%L -> %N = %N.fromJson(%N) ?: throw·",
               index, property.localName, nameAllocator[property.delegateKey], readerParam)
 
           result.addCode(jsonDataException(
               "Non-null value '", property.localName, "' was null at ", readerParam))
+
+          result.addCode("\n»")
         }
       }
     }
